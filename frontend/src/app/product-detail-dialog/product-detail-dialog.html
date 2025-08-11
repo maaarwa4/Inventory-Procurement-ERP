@@ -1,0 +1,12 @@
+<h2 mat-dialog-title>{{ product.name }}</h2>
+<mat-dialog-content>
+  <img [src]="product.imageUrl" (error)="product.imageUrl= 'assets/default.jpg'" alt="{{ product.name }}" style="width: 100%; max-height: 300px;">
+  <p><strong>Brand:</strong> {{ product.brand }}</p>
+  <p><strong>Category:</strong> {{ product.category }}</p>
+  <p><strong>Price:</strong> {{ product.price | currency:'USD' }}</p>
+  <p><strong>Stock Quantity:</strong> {{ product.stockQuantity }}</p>
+  <p><strong>Description:</strong> {{ product.description }}</p>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Close</button>
+</mat-dialog-actions>

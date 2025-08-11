@@ -1,9 +1,12 @@
 package com.mon_projet_pfa.backend.controllers;
 
+import com.mon_projet_pfa.backend.dtos.PageResponse;
+import com.mon_projet_pfa.backend.dtos.ProductSearchCriteria;
 import com.mon_projet_pfa.backend.models.Product;
 import com.mon_projet_pfa.backend.services.EnumService;
 import com.mon_projet_pfa.backend.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -89,6 +92,15 @@ public class ProductController {
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
+    }
+
+    @PostMapping("/search")
+    public PageResponse<Product> searchProducts(
+            @RequestBody ProductSearchCriteria criteria,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        return productService.searchProducts(criteria, PageRequest.of(page, size));
     }
 
     public static class DropdownData {

@@ -1,18 +1,239 @@
-/* styles.scss - Les styles globaux de votre application */
+/* Variables Orange Business */
 
-html, body {
-  height: 100%;
+$orange-primary: #FF7900;
+$orange-dark: #F16E00;
+$orange-light: #FF9D45;
+$dark-gray: #333333;
+$light-gray: #F5F5F5;
+$white: #FFFFFF;
+
+/* Reset et styles de base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-  margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: $light-gray;
+  color: $dark-gray;
+  line-height: 1.6;
 }
 
-/* Vous pourrez ajouter vos styles personnalisés ici plus tard */
-/* Exemple : */
-/*
-.ma-classe-speciale {
-  background-color: orange;
+/* Header unifié */
+.app-header {
+  background: linear-gradient(135deg, $orange-primary, $orange-dark);
+  color: $white;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+
+  .logo {
+    height: 50px;
+    margin-right: 1rem;
+  }
+
+  h1 {
+    font-weight: 300;
+    font-size: 1.8rem;
+  }
 }
-*/
+
+
+/* Conteneur principal */
+.main-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+/* Cartes de produits - Style premium */
+.product-card {
+  background: $white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+  position: relative;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+  }
+
+  .product-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-bottom: 1px solid #eee;
+  }
+
+  .product-content {
+    padding: 1.5rem;
+
+    .product-title {
+      color: $dark-gray;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .product-price {
+      color: $orange-primary;
+      font-weight: bold;
+      font-size: 1.3rem;
+    }
+
+    .orange-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: $orange-primary;
+      color: white;
+      padding: 0.3rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+    }
+  }
+}
+
+/* Boutons Orange */
+.btn-orange {
+  background: $orange-primary;
+  color: $white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.3s;
+
+  &:hover {
+    background: $orange-dark;
+  }
+
+  &.outline {
+    background: transparent;
+    border: 1px solid $orange-primary;
+    color: $orange-primary;
+  }
+}
+
+/* Barre de recherche élégante */
+.search-bar {
+  margin: 2rem 0;
+  position: relative;
+
+  input {
+    width: 100%;
+    padding: 1rem;
+    padding-left: 3rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    background-image: url('/assets/search-icon.svg');
+    background-repeat: no-repeat;
+    background-position: 1rem center;
+    transition: all 0.3s;
+
+    &:focus {
+      border-color: $orange-primary;
+      box-shadow: 0 0 0 3px rgba($orange-primary, 0.2);
+    }
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .products-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+
+  .app-navbar {
+    background: linear-gradient(135deg, $orange-primary, $orange-dark);
+    color: $white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  
+    .logo {
+      height: 40px;
+      margin-right: 1rem;
+    }
+  
+    .navbar-left {
+      display: flex;
+      align-items: center;
+  
+      nav a {
+        color: $white;
+        margin: 0 1rem;
+        text-decoration: none;
+        font-weight: 500;
+        position: relative;
+        padding-bottom: 4px;
+  
+        &.active,
+        &:hover {
+          border-bottom: 2px solid $white;
+        }
+      }
+    }
+  
+    .navbar-right {
+      position: relative;
+  
+      .profile-menu {
+        position: relative;
+        cursor: pointer;
+  
+        .profile-name {
+          font-weight: 500;
+        }
+  
+        &:hover .profile-dropdown {
+          display: block;
+        }
+  
+        .profile-dropdown {
+          display: none;
+          position: absolute;
+          right: 0;
+          top: 120%;
+          background: $white;
+          color: $dark-gray;
+          border-radius: 4px;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+          overflow: hidden;
+          min-width: 180px;
+  
+          a {
+            display: block;
+            padding: 0.75rem 1rem;
+            text-decoration: none;
+            color: $dark-gray;
+  
+            &:hover {
+              background: $light-gray;
+            }
+          }
+        }
+      }
+    }
+  }
+  

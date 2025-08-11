@@ -7,16 +7,18 @@ import { ProductService } from '../../../core/services/product.service';
 import { Product } from '../../../models/product'
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { ViewEncapsulation } from '@angular/core';
 
 @Component({
   selector: 'app-product-form',
+  encapsulation: ViewEncapsulation.None,
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './product-form.html',
   styleUrls: ['./product-form.css']
 })
 export class ProductFormComponent implements OnInit {
-  product: Product = { name: '', description: '', price: 0, stock_quantity: 0, brand: '', category: '' };
+  product: Product = { name: '', description: '', price: 0, stockQuantity: 0, brand: '', category: '' };
   isEdit = false;
   id!: number;
 
