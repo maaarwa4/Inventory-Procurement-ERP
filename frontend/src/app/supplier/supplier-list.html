@@ -1,0 +1,64 @@
+<div class="supplier-container">
+    <!-- 🔍 Barre de recherche -->
+    <div class="filter-bar">
+      <input 
+        type="text"
+        [(ngModel)]="searchKeyword"
+        (input)="onSearchChange()"
+        placeholder="Search by company name..."
+        class="search-input"
+      />
+  
+      <!-- 🎯 Filtre par statut -->
+      <select [(ngModel)]="statusFilter" (change)="onStatusChange(statusFilter)" class="status-select">
+        <option value="all">All suppliers</option>
+        <option value="active">Active only</option>
+        <option value="inactive">Inactive only</option>
+      </select>
+
+      <button class="add-btn" (click)="addSupplier()">➕ Add Supplier</button>
+    </div>
+
+
+    
+  
+    <!-- 📋 Liste des fournisseurs -->
+    <table class="supplier-table" *ngIf="suppliers.length > 0; else noSuppliers">
+      <thead>
+        <tr>
+          <th>Company</th>
+          <th>Contact</th>
+          <th>Phone</th>
+          <th>Email</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let s of suppliers">
+          <td>{{ s.companyName }}</td>
+          <td>{{ s.firstName }} {{ s.lastName }}</td>
+          <td>{{ s.phone }}</td>
+          <td>{{ s.email }}</td>
+          <td>
+            <span [class.active]="s.isActive" [class.inactive]="!s.isActive">
+              {{ s.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </td>
+          <td>
+            <button (click)="editSupplier(s.id!)">✏️ Edit</button>
+            <button (click)="viewProducts(s.id!)">📦 Products</button>
+            <button (click)="deactivateSupplier(s)">
+              {{ s.isActive ? 'Deactivate' : 'Activate' }}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  
+    <!-- Message si aucun fournisseur -->
+    <ng-template #noSuppliers>
+      <p class="empty-msg">No suppliers found.</p>
+    </ng-template>
+  </div>
+  

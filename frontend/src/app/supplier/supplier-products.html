@@ -1,0 +1,128 @@
+<!-- src/app/components/supplier-products/supplier-products.html -->
+<div class="supplier-products-container">
+  <div class="header">
+    <h2>Supplier Products</h2>
+    <button class="add-btn" (click)="openPopup()">+ Add Product</button>
+  </div>
+
+  <div *ngIf="products.length > 0; else noProducts" class="products-grid">
+    <div *ngFor="let product of products" class="product-card">
+      <div class="thumb">
+        <img [src]="product.image_url || 'https://via.placeholder.com/300x200?text=No+Image'" alt="{{product.name}}">
+      </div>
+      <div class="info">
+        <h3 title="{{ product.name }}">{{ product.name }}</h3>
+        <p class="muted">{{ product.brand }} • {{ product.category }}</p>
+        <p><strong>Price:</strong> {{ product.price | currency }}</p>
+        <div class="meta">
+          <span *ngIf="product.storage"><strong>Storage:</strong> {{ product.storage }}</span>
+          <span *ngIf="product.color"><strong>Color:</strong> {{ product.color }}</span>
+          <span *ngIf="product.stock_quantity !== null && product.stock_quantity !== undefined">
+            <strong>Stock:</strong> {{ product.stock_quantity }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noProducts>
+    <p class="no-products">No products for this supplier.</p>
+  </ng-template>
+
+  <!-- Modal -->
+  <div class="modal-backdrop" *ngIf="showPopup" (click)="closePopup()"></div>
+  <div class="modal" *ngIf="showPopup" role="dialog" aria-modal="true">
+    <div class="modal-header">
+      <h3>Add Product</h3>
+      <button class="icon-btn" (click)="closePopup()" aria-label="Close">✕</button>
+    </div>
+
+    <form (ngSubmit)="saveProduct()" #productForm="ngForm" class="modal-body">
+      <div class="form-grid">
+        <div class="field">
+          <label>Name *</label>
+          <input type="text" [(ngModel)]="form.name" name="name" required />
+        </div>
+
+        <div class="field">
+          <label>Brand *</label>
+          <select [(ngModel)]="form.brand" name="brand" required>
+            <option value="" disabled selected>Select brand</option>
+            <option *ngFor="let b of brands" [value]="b">{{ b }}</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Category *</label>
+          <select [(ngModel)]="form.category" name="category" required>
+            <option value="" disabled selected>Select category</option>
+            <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Price *</label>
+          <input type="number" step="0.01" [(ngModel)]="form.price" name="price" required />
+        </div>
+
+        <div class="field">
+          <label>Stock Quantity</label>
+          <input type="number" [(ngModel)]="form.stock_quantity" name="stock_quantity" />
+        </div>
+
+        <div class="field">
+          <label>Color</label>
+          <select [(ngModel)]="form.color" name="color">
+            <option value="">—</option>
+            <option *ngFor="let col of colors" [value]="col">{{ col }}</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Storage</label>
+          <select [(ngModel)]="form.storage" name="storage">
+            <option value="">—</option>
+            <option *ngFor="let s of storageCapacities" [value]="s">{{ s }}</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Model</label>
+          <input type="text" [(ngModel)]="form.model" name="model" />
+        </div>
+
+        <div class="field">
+          <label>Screen size</label>
+          <input type="text" [(ngModel)]="form.screen_size" name="screen_size" placeholder="e.g. 6.1" />
+        </div>
+
+        <div class="field">
+          <label>Network type</label>
+          <input type="text" [(ngModel)]="form.network_type" name="network_type" placeholder="e.g. 5G / WiFi / Bluetooth" />
+        </div>
+
+        <div class="field field-colspan">
+          <label>Image URL</label>
+          <input type="url" [(ngModel)]="form.image_url" name="image_url" placeholder="https://example.com/image.jpg" />
+        </div>
+
+        <div class="field field-colspan">
+          <label>Description</label>
+          <textarea [(ngModel)]="form.description" name="description" rows="3"></textarea>
+        </div>
+
+        <div class="field image-preview" *ngIf="form.image_url">
+          <label>Preview</label>
+          <img [src]="form.image_url" alt="Preview" style="max-width: 200px; max-height: 150px;" />
+        </div>
+      </div>
+
+      <p class="error" *ngIf="serverError">{{ serverError }}</p>
+
+      <div class="modal-actions">
+        <button type="submit" class="save-btn" [disabled]="!productForm.valid">Save</button>
+        <button type="button" class="cancel-btn" (click)="closePopup()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>

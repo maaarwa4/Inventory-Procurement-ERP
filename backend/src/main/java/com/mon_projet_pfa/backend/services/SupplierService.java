@@ -1,5 +1,6 @@
 package com.mon_projet_pfa.backend.services;
 
+import com.mon_projet_pfa.backend.models.Product;
 import com.mon_projet_pfa.backend.models.Supplier;
 import com.mon_projet_pfa.backend.repositories.SupplierRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SupplierService {
     private final SupplierRepository supplierRepository;
+    private final ProductService productService; // Injection pour récupérer les produits
 
     // CREATE
     @Transactional
@@ -65,5 +67,10 @@ public class SupplierService {
     @Transactional
     public void disable(Long id) {
         supplierRepository.deactivateById(id);
+    }
+
+    // ✅ NOUVELLE MÉTHODE : liste des produits d'un fournisseur
+    public List<Product> getProductsBySupplier(Long supplierId) {
+        return productService.getProductsBySupplierId(supplierId);
     }
 }

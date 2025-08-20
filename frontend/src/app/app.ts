@@ -12,7 +12,7 @@ import { RouterOutlet } from '@angular/router'; // <-- L'IMPORTATION LA PLUS IMP
   templateUrl: './app.html',
   styleUrls: ['./app.css']
 })
-export class AppComponent {
+export class App {
   title = 'frontend';
 }
 

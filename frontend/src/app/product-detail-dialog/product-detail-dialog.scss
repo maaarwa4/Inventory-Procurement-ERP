@@ -1,0 +1,79 @@
+.dialog-container {
+  width: 420px;          // largeur confortable
+  max-width: 90vw;       // responsive pour petits écrans
+  max-height: 85vh;      // pour ne pas dépasser l’écran
+  overflow-y: auto;      // scroll interne si contenu dépasse
+  background: #121212;   // noir très sobre
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #e0e0e0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.product-image img {
+  width: 100%;
+  max-height: 250px;  // image moins haute
+  object-fit: contain;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+  transition: transform 0.3s ease;
+}
+
+.product-image img:hover {
+  transform: scale(1.02); // léger effet
+}
+
+.product-details {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  margin-bottom: 1.5rem;
+}
+
+.product-details h2 {
+  text-align: center;
+  color: #ff6600; 
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.detail-bubble {
+  background: #1e1e1e;
+  border-radius: 50px;
+  padding: 0.45rem 0.9rem;
+  display: inline-block;
+  font-size: 0.95rem;
+  color: #e0e0e0;
+}
+
+.detail-bubble .label {
+  font-weight: 500;
+  color: #ff9f4d; 
+}
+
+.dialog-actions {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.dialog-actions button {
+  background: #ff6600;
+  color: #121212;
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 0.55rem 1.4rem;
+  transition: all 0.3s ease;
+}
+
+.dialog-actions button:hover {
+  background: #e65c00;
+  box-shadow: 0 5px 15px rgba(255,102,0,0.3);
+}

@@ -1,60 +1,115 @@
-<!-- Nom du fichier : src/app/features/product/product-list/product-list.html -->
-<div class="product-page-container">
-  <h1>Nos Produits</h1>
+<div class="product-list-container">
 
-  <!-- Section des filtres avec le style Material -->
-  <div class="filters-container">
+  <!-- 🔍 Bar de recherche & filtres -->
+  <div class="search-filters-bar">
     <mat-form-field appearance="outline" class="search-field">
-      <mat-label>Rechercher un produit</mat-label>
-      <input matInput [(ngModel)]="search" (keyup.enter)="searchProducts()" placeholder="Ex: iPhone 15">
-      <button mat-icon-button matSuffix (click)="searchProducts()" aria-label="Lancer la recherche">
-        <mat-icon>search</mat-icon>
+      <mat-label>Search products by name</mat-label>
+      <input matInput [(ngModel)]="searchCriteria.name" (keyup.enter)="searchProducts()" placeholder="e.g., iPhone 14 Pro">
+      <button mat-icon-button matSuffix aria-label="Search" (click)="searchProducts()">
+      
       </button>
     </mat-form-field>
+
+    <div class="filters-container">
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Brand</mat-label>
+        <mat-select [(ngModel)]="searchCriteria.brand" (selectionChange)="searchProducts()">
+          <mat-option [value]="''">All Brands</mat-option>
+          <mat-option *ngFor="let brand of dropdownData.brands" [value]="brand">{{ brand }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Category</mat-label>
+        <mat-select [(ngModel)]="searchCriteria.category" (selectionChange)="searchProducts()">
+          <mat-option [value]="''">All Categories</mat-option>
+          <mat-option *ngFor="let category of dropdownData.categories" [value]="category">{{ category }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Price</mat-label>
+        <mat-select [(ngModel)]="selectedPriceRange" (selectionChange)="onPriceRangeChange()">
+          <mat-option [value]="''">Any Price</mat-option>
+          <mat-option value="0-500">$0 - $500</mat-option>
+          <mat-option value="500-1000">$500 - $1000</mat-option>
+          <mat-option value="1000-1500">$1000 - $1500</mat-option>
+          <mat-option value="1500+">$1500+</mat-option>
+        </mat-select>
+      </mat-form-field>
+      
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Storage</mat-label>
+        <mat-select [(ngModel)]="selectedStorage" (selectionChange)="onStorageChange()">
+          <mat-option [value]="''">Any Storage</mat-option>
+          <mat-option *ngFor="let storage of dropdownData.storageOptions" 
+                      [value]="storage">
+            {{ formatStorageForDisplay(storage) }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <button mat-flat-button class="clear-filters-btn" (click)="clearAllFilters()">
+      Clear
+    </button>
   </div>
 
-  <!-- Grille des produits, plus de tableau ! -->
-  <div class="product-grid" *ngIf="products.length > 0; else noProducts">
-    <!-- On boucle sur les produits pour créer une carte pour chaque -->
-    <mat-card *ngFor="let product of products" class="product-card">
-      <!-- Image du produit (il faudra ajouter imageUrl à votre modèle Product) -->
-      <img mat-card-image [src]="product.image_url" [alt]="product.name" class="product-image">
+  <div *ngIf="isLoading" class="loading-spinner">
+    <mat-progress-spinner mode="indeterminate" diameter="60"></mat-progress-spinner>
+    <p>Loading Products...</p>
+  </div>
 
-      <mat-card-header>
-        <mat-card-title>{{ product.name }}</mat-card-title>
-        <mat-card-subtitle>{{ product.brand }} - {{ product.category }}</mat-card-subtitle>
-      </mat-card-header>
+  <!-- 🚫 Affichage si aucun produit n'est trouvé -->
+  <div *ngIf="!isLoading && products.length === 0" class="empty-state">
+    <mat-icon class="empty-icon">search_off</mat-icon>
+    <h3>No Products Found</h3>
+    <p>We couldn't find any products matching your criteria. Please try adjusting your filters.</p>
+    <button mat-raised-button (click)="clearAllFilters()">Clear All Filters</button>
+  </div>
 
-      <mat-card-content>
-        <p class="product-description">{{ product.description | slice:0:100 }}...</p>
-        <p class="product-price">{{ product.price | currency:'EUR' }}</p>
-      </mat-card-content>
-
-      <mat-card-actions align="end">
-        <button mat-stroked-button [routerLink]="['/products', product.id]">Détails</button>
-        <button mat-flat-button color="primary" [routerLink]="['/products/edit', product.id]">
-          <!-- Ceci est un exemple, le client ne devrait pas pouvoir modifier -->
-          Modifier
-        </button>
-      </mat-card-actions>
+  <!-- ✅ Affichage de la grille ou liste de produits -->
+  <div *ngIf="!isLoading && products.length > 0" 
+       class="products-container" 
+       [ngClass]="{'grid-view': viewMode === 'grid', 'list-view': viewMode === 'list'}">
+    
+    <mat-card class="product-card" *ngFor="let product of products" (click)="openProductDetails(product)">
+      <div class="product-image-container">
+        <div *ngIf="product.stock_quantity === 0" class="product-badge out-of-stock">Out of Stock</div>
+        <div *ngIf="product.stock_quantity > 0 && product.stock_quantity <= 10" class="product-badge low-stock">Low Stock</div>
+        <img class="product-image" [src]="product.image_url" (error)="onImageError($event, product)" [alt]="product.name" loading="lazy" decoding="async" referrerpolicy="no-referrer">
+      </div>
+      
+      <div class="product-content">
+        <div>
+          <div class="product-brand">{{ product.brand }}</div>
+          <h3 class="product-title">{{ product.name }}</h3>
+          <p class="product-specs">{{ getProductSpecs(product) }}</p>
+        </div>
+        
+        <div class="product-footer">
+          <div class="product-price">{{ product.price | currency:'USD':'symbol':'1.2-2' }}</div>
+          <div class="product-stock" [ngClass]="{
+            'in-stock': product.stock_quantity > 10,
+            'low-stock': product.stock_quantity > 0 && product.stock_quantity <= 10,
+            'out-of-stock': product.stock_quantity === 0
+          }">
+            {{ product.stock_quantity > 0 ? product.stock_quantity + ' units left' : 'Out of stock' }}
+          </div>
+        </div>
+      </div>
     </mat-card>
   </div>
 
-  <!-- Message si aucun produit n'est trouvé -->
-  <ng-template #noProducts>
-    <div class="no-products-found">
-      <mat-icon>search_off</mat-icon>
-      <p>Aucun produit ne correspond à votre recherche.</p>
-    </div>
-  </ng-template>
-
-  <!-- Paginateur Angular Material, qui remplace les vieux boutons -->
-  <mat-paginator
-      class="paginator"
-      [length]="totalElements"
-      [pageSize]="size"
-      [pageSizeOptions]="[12, 24, 48]"
-      (page)="handlePageEvent($event)"
-      aria-label="Sélectionner la page">
+  <!-- 📄 Pagination -->
+  <mat-paginator *ngIf="!isLoading && pagination.length > 0"
+                 class="product-paginator"
+                 [length]="pagination.length"
+                 [pageSize]="pagination.pageSize"
+                 [pageSizeOptions]="[12, 24, 48]"
+                 [pageIndex]="pagination.pageIndex"
+                 (page)="onPageChange($event)"
+                 showFirstLastButtons>
   </mat-paginator>
+
 </div>

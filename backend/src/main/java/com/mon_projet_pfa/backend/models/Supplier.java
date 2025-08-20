@@ -12,6 +12,7 @@ import jakarta.validation.constraints.Pattern;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+
 public class Supplier {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

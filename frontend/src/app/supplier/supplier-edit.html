@@ -1,0 +1,29 @@
+<div class="supplier-edit">
+    <h2>Modifier Fournisseur</h2>
+    <form #f="ngForm">
+      <label>ID :</label>
+      <input type="text" [value]="supplier.id" readonly />
+  
+      <label>Prénom :</label>
+      <input type="text" [(ngModel)]="supplier.firstName" name="firstName" />
+  
+      <label>Nom :</label>
+      <input type="text" [(ngModel)]="supplier.lastName" name="lastName" />
+  
+      <label>Entreprise :</label>
+      <input type="text" [(ngModel)]="supplier.companyName" name="companyName" />
+  
+      <label>Ville :</label>
+      <input type="text" [(ngModel)]="supplier.address" name="address" />
+  
+      <label>Email :</label>
+      <input type="email" [(ngModel)]="supplier.email" name="email" />
+  
+      <label>Pays :</label>
+      <input type="text" [(ngModel)]="supplier.country" name="country" />
+  
+      <button type="button" (click)="save()">Enregistrer</button>
+      <button type="button" (click)="router.navigate(['/suppliers'])">Annuler</button>
+    </form>
+  </div>
+  

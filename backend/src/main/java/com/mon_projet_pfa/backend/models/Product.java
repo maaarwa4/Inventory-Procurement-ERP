@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mon_projet_pfa.backend.enums.Brand;
 import com.mon_projet_pfa.backend.enums.Category;
@@ -81,6 +82,11 @@ public class Product {
     @Column(columnDefinition = "TIMESTAMP DEFAULT NOW()")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "supplier_id", nullable = false)
+    @JsonIgnore
+    private Supplier supplier;
 
     @PrePersist
     protected void onCreate() {

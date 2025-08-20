@@ -1,0 +1,37 @@
+<div class="dialog-container">
+  <div class="product-image">
+    <img [src]="data.product.image_url" (error)="onImageError($event)" alt="{{data.product.name}}">
+  </div>
+
+  <div class="product-details">
+    <h2>{{ data.product.name }}</h2>
+
+    <div class="detail-bubble">
+      <span class="label">Brand:</span> {{ data.product.brand }}
+    </div>
+
+    <div class="detail-bubble">
+      <span class="label">Category:</span> {{ data.product.category }}
+    </div>
+
+    <div class="detail-bubble">
+      <span class="label">Price:</span> {{ data.product.price | currency:'USD' }}
+    </div>
+
+    <div class="detail-bubble" *ngIf="data.product.storage">
+      <span class="label">Storage:</span> {{ data.product.storage }}
+    </div>
+
+    <div class="detail-bubble" *ngIf="data.product.color">
+      <span class="label">Color:</span> {{ data.product.color }}
+    </div>
+
+    <div class="detail-bubble" *ngIf="data.product.model">
+      <span class="label">Model:</span> {{ data.product.model }}
+    </div>
+  </div>
+
+  <div class="dialog-actions">
+    <button mat-raised-button mat-dialog-close>Close</button>
+  </div>
+</div>

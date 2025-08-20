@@ -1,17 +1,16 @@
 export interface Product {
-  id?: number;
+  id: number;
   name: string;
-  description?: string;
-  brand: string;         // Enum en Java → string ici
-  category: string;
+  brand: string; // Enum Brand
+  category: string; // Enum Category
   price: number;
   stock_quantity: number;
   image_url?: string;
+  description?: string;
+  storage?: string; // Enum StorageCapacity
+  color?: string; // Enum Color
   model?: string;
-  color?: string;
-  storage?: string;
-  screen_size?: string;
-  network_type?: string;
   created_at?: string;
   updated_at?: string;
+  supplierId?: number;
 }

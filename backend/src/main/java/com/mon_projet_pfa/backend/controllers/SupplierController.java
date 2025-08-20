@@ -12,16 +12,22 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/suppliers")
+@CrossOrigin(origins = "http://localhost:4200")
 @RequiredArgsConstructor
 @Valid
 public class SupplierController {
     private final SupplierService supplierService;
 
-    
     @PostMapping
-    public ResponseEntity<Supplier> create(@RequestBody Supplier supplier) {
-        Supplier createdSupplier = supplierService.create(supplier);
-        return ResponseEntity.ok(createdSupplier);
+    public ResponseEntity<?> create(@RequestBody Supplier supplier) {
+        try {
+            supplier.setId(null); // ⚡ assure que JPA génère l'ID
+            Supplier createdSupplier = supplierService.create(supplier);
+            return ResponseEntity.ok(createdSupplier);
+        } catch (Exception e) {
+            e.printStackTrace(); // affiche l’erreur complète dans la console backend
+            return ResponseEntity.status(500).body("Error creating supplier: " + e.getMessage());
+        }
     }
 
     // READ ALL (with optional filters)
