@@ -51,6 +51,7 @@
             <button (click)="deactivateSupplier(s)">
               {{ s.isActive ? 'Deactivate' : 'Activate' }}
             </button>
+            <button (click)="deleteSupplier(s.id!)" class="delete-btn">🗑️ Delete</button>
           </td>
         </tr>
       </tbody>

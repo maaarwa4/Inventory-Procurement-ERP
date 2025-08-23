@@ -1,35 +1,37 @@
-// src/main/java/com/mon_projet_pfa/backend/dtos/ProductCreateDTO.java
 package com.mon_projet_pfa.backend.dtos;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import com.mon_projet_pfa.backend.enums.Brand;
+import com.mon_projet_pfa.backend.enums.Category;
+import com.mon_projet_pfa.backend.enums.Color;
+import com.mon_projet_pfa.backend.enums.StorageCapacity;
+import com.mon_projet_pfa.backend.models.Product;
 
 @Data
 public class ProductCreateDTO {
     private String name;
     private String description;
-    private String brand; // enum Brand, uppercase e.g. "APPLE"
-    private String category; // enum Category, uppercase e.g. "SMARTPHONE"
+    private String brand;
+    private String category;
     private BigDecimal price;
-
-    @JsonProperty("stock_quantity")
-    private Integer stockQuantity;
-
-    private String color; // enum Color, uppercase or null
-    private String storage; // enum StorageCapacity, uppercase or null
-
-    @JsonProperty("image_url")
-    private String imageUrl;
-
     private String model;
+    private String color;
+    private String storage;
+    private Integer stock_quantity;
+    private String image_url;
+    private String screen_size;
+    private String network_type;
+    private Long supplier_id;
 
-    @JsonProperty("screen_size")
-    private String screenSize;
 
-    @JsonProperty("network_type")
-    private String networkType;
-
-    @JsonProperty("supplier_id")
-    private Long supplierId; // REQUIRED
 }

@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
+import org.springframework.lang.Nullable;
 
 @Entity
 @Table(name = "supplier")
@@ -30,9 +31,9 @@ public class Supplier {
     @JsonProperty("companyName")
     private String companyName;
 
-    @Pattern(regexp = "^(\\+212|0)[5-7][0-9]{8}$", message = "Doit être un numéro marocain valide (ex: +212612345678 ou 0612345678)")
     @Column(length = 100)
     @JsonProperty("phone")
+    @Nullable
     private String phone;
 
     @Column(length = 100)

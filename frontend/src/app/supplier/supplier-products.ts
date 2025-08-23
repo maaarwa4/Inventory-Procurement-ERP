@@ -3,8 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { SupplierService } from './supplier.service';
 import { Product } from '../models/product';
-import { DropdownData } from '../models/dropdown-data';
 import { ProductCreateDTO } from '../models/product-create-dto';
+import { DropdownData } from '../models/dropdown-data';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -23,13 +23,11 @@ export class SupplierProducts implements OnInit {
   serverError = '';
   imagePreviewUrl: string | null = null;
 
-  // Dropdowns
   brands: string[] = [];
   categories: string[] = [];
   colors: string[] = [];
   storageCapacities: string[] = [];
 
-  // Formulaire local
   form: any = this.emptyForm();
 
   constructor(
@@ -39,14 +37,13 @@ export class SupplierProducts implements OnInit {
 
   ngOnInit(): void {
     this.supplierId = Number(this.route.snapshot.paramMap.get('id'));
-    if (this.supplierId) {
-      this.loadProducts();
-    }
+    if (this.supplierId) this.loadProducts();
     this.loadDropdowns();
   }
 
   private emptyForm(): any {
     return {
+      id: null,
       name: '',
       description: '',
       brand: '',
@@ -64,8 +61,8 @@ export class SupplierProducts implements OnInit {
 
   loadProducts(): void {
     this.supplierService.getProductsBySupplier(this.supplierId).subscribe({
-      next: (data) => (this.products = data),
-      error: (err) => console.error('Erreur chargement produits', err)
+      next: (data) => this.products = data,
+      error: (err) => console.error('[LOAD PRODUCTS]', err)
     });
   }
 
@@ -105,84 +102,115 @@ export class SupplierProducts implements OnInit {
     }
 
     if (!this.form.name || !this.form.brand || !this.form.category || this.form.price == null || this.form.price <= 0) {
-      this.serverError = 'Veuillez remplir au minimum: Name, Brand, Category, Price (> 0).';
+      this.serverError = 'Veuillez remplir Name, Brand, Category et Price (> 0).';
       return;
     }
 
-    // ✅ Test avec DTO MINIMAL - seulement les champs obligatoires
-    const dto: any = {
-      name: this.form.name.trim(),
-      brand: String(this.form.brand).toUpperCase(),
-      category: String(this.form.category).toUpperCase(),
-      price: parseFloat(this.form.price.toString()),
-      stock_quantity: parseInt(this.form.stock_quantity) || 0,
-      supplier_id: parseInt(this.supplierId.toString())
-    };
+    if (this.form.id) {
+      // === UPDATE === - CORRECTION: Utiliser la même structure que CREATE
+      const updateDto: ProductCreateDTO = {
+        name: this.form.name.trim(),
+        brand: String(this.form.brand).toUpperCase(),
+        category: String(this.form.category).toUpperCase(),
+        price: Number(this.form.price),
+        stock_quantity: Number(this.form.stock_quantity) || 0,
+        supplier_id: this.supplierId, // CORRECTION: Utiliser supplier_id au lieu de supplier: {id}
+        description: this.form.description?.trim(),
+        color: this.form.color ? String(this.form.color).toUpperCase() : undefined,
+        storage: this.form.storage ? String(this.form.storage).toUpperCase() : undefined,
+        model: this.form.model?.trim(),
+        screen_size: this.form.screen_size?.trim(),
+        network_type: this.form.network_type?.trim(),
+        image_url: this.form.image_url?.trim()
+      };
 
-    // TEMPORAIREMENT: commentons tous les champs optionnels
-    /*
-    if (this.form.description && this.form.description.trim()) {
-      dto.description = this.form.description.trim();
-    }
+      console.log('🔵 UPDATE DTO envoyé:', updateDto);
 
-    if (this.form.color && this.form.color !== '') {
-      dto.color = String(this.form.color).toUpperCase();
-    }
-
-    if (this.form.storage && this.form.storage !== '') {
-      dto.storage = String(this.form.storage).toUpperCase();
-    }
-
-    if (this.form.model && this.form.model.trim()) {
-      dto.model = this.form.model.trim();
-    }
-
-    if (this.form.screen_size && this.form.screen_size.trim()) {
-      dto.screen_size = this.form.screen_size.trim();
-    }
-
-    if (this.form.network_type && this.form.network_type.trim()) {
-      dto.network_type = this.form.network_type.trim();
-    }
-
-    if (this.form.image_url && this.form.image_url.trim()) {
-      dto.image_url = this.form.image_url.trim();
-    }
-    */
-
-    console.log('DTO envoyé:', JSON.stringify(dto, null, 2)); // JSON formaté pour débugger
-    console.log('Supplier ID type:', typeof this.supplierId, this.supplierId);
-    console.log('Form data:', this.form);
-
-    this.supplierService.addProduct(dto).subscribe({
-      next: (saved) => {
-        console.log('Produit sauvé:', saved);
-        this.products.push(saved);
-        this.closePopup();
-      },
-      error: (err) => {
-        console.error('Erreur ajout produit', err);
-        console.error('Détails erreur:', err.error);
-        console.error('Status:', err.status);
-        console.error('Response complète:', err);
-        
-        let errorMessage = 'Impossible d\'ajouter le produit.';
-        
-        if (err.error) {
-          if (typeof err.error === 'string') {
-            errorMessage = `Erreur: ${err.error}`;
-          } else if (err.error.message) {
-            errorMessage = `Erreur: ${err.error.message}`;
-          } else if (err.error.errors) {
-            // Gestion des erreurs de validation - compatible ES5+
-            const errorKeys = Object.keys(err.error.errors);
-            const errors = errorKeys.map(key => err.error.errors[key]).join(', ');
-            errorMessage = `Erreurs de validation: ${errors}`;
-          }
+      this.supplierService.updateProduct(this.form.id, updateDto).subscribe({
+        next: (updated) => {
+          console.log('✅ Produit mis à jour:', updated);
+          const idx = this.products.findIndex(p => p.id === updated.id);
+          if (idx > -1) this.products[idx] = updated;
+          this.closePopup();
+        },
+        error: (err) => {
+          console.error('[UPDATE] ERREUR:', err);
+          console.error('Response:', err.error);
+          this.serverError = err.error?.message || 'Impossible de modifier ce produit.';
         }
-        
-        this.serverError = errorMessage;
-      }
-    });
+      });
+
+    } else {
+      // === CREATE === 
+      const createDto: ProductCreateDTO = {
+        name: this.form.name.trim(),
+        brand: String(this.form.brand).toUpperCase(),
+        category: String(this.form.category).toUpperCase(),
+        price: Number(this.form.price),
+        stock_quantity: Number(this.form.stock_quantity) || 0,
+        supplier_id: this.supplierId,
+        description: this.form.description?.trim(),
+        color: this.form.color ? String(this.form.color).toUpperCase() : undefined,
+        storage: this.form.storage ? String(this.form.storage).toUpperCase() : undefined,
+        model: this.form.model?.trim(),
+        screen_size: this.form.screen_size?.trim(),
+        network_type: this.form.network_type?.trim(),
+        image_url: this.form.image_url?.trim()
+      };
+
+      console.log('🟢 CREATE DTO envoyé:', createDto);
+
+      this.supplierService.addProduct(createDto).subscribe({
+        next: (saved) => {
+          console.log('✅ Produit créé:', saved);
+          this.products.push(saved);
+          this.closePopup();
+        },
+        error: (err) => {
+          console.error('[CREATE] ERREUR:', err);
+          console.error('Response:', err.error);
+          this.serverError = err.error?.message || 'Impossible d\'ajouter ce produit.';
+        }
+      });
+    }
+  }
+
+  editProduct(product: Product): void {
+    this.showPopup = true;
+    this.serverError = '';
+    
+    // CORRECTION: Bien copier toutes les propriétés du produit
+    this.form = {
+      id: product.id,
+      name: product.name || '',
+      description: product.description || '',
+      brand: product.brand || '',
+      category: product.category || '',
+      price: product.price || 0,
+      stock_quantity: product.stock_quantity || 0,
+      color: product.color || '',
+      storage: product.storage || '',
+      model: product.model || '',
+      screen_size: product.screen_size || '',
+      network_type: product.network_type || '',
+      image_url: product.image_url || ''
+    };
+    
+    console.log('📝 Form pour édition:', this.form);
+  }
+
+  deleteProduct(productId: number): void {
+    if (confirm('Are you sure you want to delete this product?')) {
+      this.supplierService.deleteProduct(productId).subscribe({
+        next: () => {
+          console.log('🗑️ Produit supprimé:', productId);
+          this.products = this.products.filter(p => p.id !== productId);
+        },
+        error: (err) => {
+          console.error('[DELETE] ERREUR', err);
+          this.serverError = 'Impossible de supprimer ce produit.';
+        }
+      });
+    }
   }
 }

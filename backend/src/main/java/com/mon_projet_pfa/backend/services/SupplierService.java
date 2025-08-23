@@ -3,7 +3,11 @@ package com.mon_projet_pfa.backend.services;
 import com.mon_projet_pfa.backend.models.Product;
 import com.mon_projet_pfa.backend.models.Supplier;
 import com.mon_projet_pfa.backend.repositories.SupplierRepository;
+
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,4 +77,32 @@ public class SupplierService {
     public List<Product> getProductsBySupplier(Long supplierId) {
         return productService.getProductsBySupplierId(supplierId);
     }
+
+    // DELETE (Hard Delete)
+    @Transactional
+    public void delete(Long id) {
+        Supplier existing = getById(id);
+        try {
+            supplierRepository.delete(existing);
+        } catch (DataIntegrityViolationException ex) {
+            throw new IllegalStateException("Impossible de supprimer ce fournisseur : des produits y sont rattachés.");
+        }
+    }
+
+    @Transactional
+    public void activateSupplier(Long id) {
+        if (!supplierRepository.existsById(id)) {
+            throw new EntityNotFoundException("Supplier not found");
+        }
+        supplierRepository.activateById(id);
+    }
+
+    @Transactional
+    public void deactivateSupplier(Long id) {
+        if (!supplierRepository.existsById(id)) {
+            throw new EntityNotFoundException("Supplier not found");
+        }
+        supplierRepository.deactivateById(id);
+    }
+
 }

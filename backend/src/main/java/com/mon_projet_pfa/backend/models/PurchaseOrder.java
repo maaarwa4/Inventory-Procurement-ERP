@@ -22,7 +22,6 @@ public class PurchaseOrder {
     @JsonProperty("creationDate")
     private LocalDate creationDate;
 
-    
     @JsonIgnore
     private Double totalAmount;
 
@@ -32,7 +31,7 @@ public class PurchaseOrder {
     private Integer quantity;
 
     @ManyToOne
-    @JoinColumn(name = "supplier_id")
+    @JoinColumn(name = "supplier_id", foreignKey = @ForeignKey(name = "fk_purchase_order_supplier"))
     private Supplier supplier;
 
     @ManyToOne
@@ -72,7 +71,6 @@ public class PurchaseOrder {
             this.totalAmount = product.getPrice().multiply(BigDecimal.valueOf(quantity)).doubleValue();
         }
     }
-
 
     public purchase_order_status getStatus() {
         return status;

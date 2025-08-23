@@ -32,4 +32,9 @@ public interface SupplierRepository extends JpaRepository<Supplier, Long> {
     @Modifying
     @Query("UPDATE Supplier s SET s.isActive = false WHERE s.id = :id")
     void deactivateById(@Param("id") Long id);
+
+    // ➜ Ajoute l’activation symétrique
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("update Supplier s set s.isActive = true where s.id = :id")
+    void activateById(@Param("id") Long id);
 }

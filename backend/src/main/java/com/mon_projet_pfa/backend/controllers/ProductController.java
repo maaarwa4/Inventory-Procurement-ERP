@@ -1,6 +1,7 @@
 package com.mon_projet_pfa.backend.controllers;
 
 import com.mon_projet_pfa.backend.dtos.PageResponse;
+import com.mon_projet_pfa.backend.dtos.ProductCreateDTO;
 import com.mon_projet_pfa.backend.dtos.ProductSearchCriteria;
 import com.mon_projet_pfa.backend.enums.Brand;
 import com.mon_projet_pfa.backend.enums.StorageCapacity;
@@ -20,7 +21,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.Map;
 import java.util.Optional;
-
+import com.mon_projet_pfa.backend.repositories.SupplierRepository;
 
 @RestController
 @RequestMapping("/api/products")
@@ -29,6 +30,8 @@ public class ProductController {
 
     @Autowired
     private ProductService productService;
+    @Autowired
+    private SupplierRepository supplierRepository;
 
     @Autowired
     private EnumService enumService;
@@ -54,39 +57,78 @@ public class ProductController {
             return ResponseEntity.internalServerError().build();
         }
     }
-@PostMapping
-public ResponseEntity<Product> create(@RequestBody Map<String, Object> body) {
-    try {
-        Integer supplierId = (Integer) body.get("supplierId");
-        Supplier supplier = new Supplier();
-        supplier.setId(Long.valueOf(supplierId));
 
+    @PostMapping
+    public Product create(@RequestBody ProductCreateDTO dto) {
         Product product = new Product();
-        product.setName((String) body.get("name"));
-        product.setBrand(Brand.valueOf((String) body.get("brand")));
-        product.setCategory(Category.valueOf((String) body.get("category")));
-        product.setPrice(new BigDecimal(body.get("price").toString()));
-        product.setStockQuantity((Integer) body.get("stock_quantity"));
+        product.setName(dto.getName());
+        product.setDescription(dto.getDescription());
+
+        // Conversion String -> Enum
+        product.setBrand(Brand.valueOf(dto.getBrand().toUpperCase()));
+        product.setCategory(Category.valueOf(dto.getCategory().toUpperCase()));
+        product.setColor(Color.valueOf(dto.getColor().toUpperCase()));
+        product.setStorage(StorageCapacity.valueOf(dto.getStorage().toUpperCase()));
+
+        product.setPrice(dto.getPrice());
+        product.setModel(dto.getModel());
+        product.setStockQuantity(dto.getStock_quantity());
+        product.setImageUrl(dto.getImage_url());
+        product.setScreenSize(dto.getScreen_size());
+        product.setNetworkType(dto.getNetwork_type());
+
+        // Récupération du Supplier depuis son ID
+        Supplier supplier = supplierRepository.findById(dto.getSupplier_id())
+                .orElseThrow(() -> new RuntimeException("Supplier not found"));
         product.setSupplier(supplier);
-        // ... map other fields ...
 
-        Product created = productService.create(product);
-        return ResponseEntity.ok(created);
-    } catch (Exception e) {
-        e.printStackTrace();
-        return ResponseEntity.badRequest().build();
+        return productService.create(product);
     }
-}
-
 
     @PutMapping("/{id}")
-    public ResponseEntity<Product> update(@PathVariable int id, @RequestBody Product product) {
+    public ResponseEntity<Product> update(@PathVariable int id, @RequestBody ProductCreateDTO dto) {
         try {
-            Product updatedProduct = productService.update(id, product);
+            // First, get the existing product
+            Product existingProduct = productService.getById(id);
+
+            // Update the fields from DTO
+            existingProduct.setName(dto.getName());
+            existingProduct.setDescription(dto.getDescription());
+
+            // Conversion String -> Enum (with null checks)
+            if (dto.getBrand() != null && !dto.getBrand().isEmpty()) {
+                existingProduct.setBrand(Brand.valueOf(dto.getBrand().toUpperCase()));
+            }
+            if (dto.getCategory() != null && !dto.getCategory().isEmpty()) {
+                existingProduct.setCategory(Category.valueOf(dto.getCategory().toUpperCase()));
+            }
+            if (dto.getColor() != null && !dto.getColor().isEmpty()) {
+                existingProduct.setColor(Color.valueOf(dto.getColor().toUpperCase()));
+            }
+            if (dto.getStorage() != null && !dto.getStorage().isEmpty()) {
+                existingProduct.setStorage(StorageCapacity.valueOf(dto.getStorage().toUpperCase()));
+            }
+
+            existingProduct.setPrice(dto.getPrice());
+            existingProduct.setModel(dto.getModel());
+            existingProduct.setStockQuantity(dto.getStock_quantity());
+            existingProduct.setImageUrl(dto.getImage_url());
+            existingProduct.setScreenSize(dto.getScreen_size());
+            existingProduct.setNetworkType(dto.getNetwork_type());
+
+            // Update supplier if provided
+            if (dto.getSupplier_id() != null) {
+                Supplier supplier = supplierRepository.findById(dto.getSupplier_id())
+                        .orElseThrow(() -> new RuntimeException("Supplier not found"));
+                existingProduct.setSupplier(supplier);
+            }
+
+            Product updatedProduct = productService.update(id, existingProduct);
             return ResponseEntity.ok(updatedProduct);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
     }

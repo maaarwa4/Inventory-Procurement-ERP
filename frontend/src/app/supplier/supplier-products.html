@@ -22,6 +22,10 @@
           </span>
         </div>
       </div>
+      <div class="actions">
+        <button (click)="editProduct(product)">✏️ Edit</button>
+        <button (click)="deleteProduct(product.id!)">🗑️ Delete</button>
+      </div>
     </div>
   </div>
 
@@ -67,12 +71,12 @@
 
         <div class="field">
           <label>Stock Quantity</label>
-          <input type="number" [(ngModel)]="form.stock_quantity" name="stock_quantity" />
+          <input type="number" [(ngModel)]="form.stock_quantity" name="stock_quantity" required />
         </div>
 
         <div class="field">
           <label>Color</label>
-          <select [(ngModel)]="form.color" name="color">
+          <select [(ngModel)]="form.color" name="color" required>
             <option value="">—</option>
             <option *ngFor="let col of colors" [value]="col">{{ col }}</option>
           </select>
@@ -80,7 +84,7 @@
 
         <div class="field">
           <label>Storage</label>
-          <select [(ngModel)]="form.storage" name="storage">
+          <select [(ngModel)]="form.storage" name="storage" required>
             <option value="">—</option>
             <option *ngFor="let s of storageCapacities" [value]="s">{{ s }}</option>
           </select>
@@ -88,27 +92,27 @@
 
         <div class="field">
           <label>Model</label>
-          <input type="text" [(ngModel)]="form.model" name="model" />
+          <input type="text" [(ngModel)]="form.model" name="model" required />
         </div>
 
         <div class="field">
           <label>Screen size</label>
-          <input type="text" [(ngModel)]="form.screen_size" name="screen_size" placeholder="e.g. 6.1" />
+          <input type="text" [(ngModel)]="form.screen_size" name="screen_size" placeholder="e.g. 6.1"  required/>
         </div>
 
         <div class="field">
           <label>Network type</label>
-          <input type="text" [(ngModel)]="form.network_type" name="network_type" placeholder="e.g. 5G / WiFi / Bluetooth" />
+          <input type="text" [(ngModel)]="form.network_type" name="network_type" placeholder="e.g. 5G / WiFi / Bluetooth" required />
         </div>
 
         <div class="field field-colspan">
           <label>Image URL</label>
-          <input type="url" [(ngModel)]="form.image_url" name="image_url" placeholder="https://example.com/image.jpg" />
+          <input type="url" [(ngModel)]="form.image_url" name="image_url" placeholder="https://example.com/image.jpg"  required/>
         </div>
 
         <div class="field field-colspan">
           <label>Description</label>
-          <textarea [(ngModel)]="form.description" name="description" rows="3"></textarea>
+          <textarea [(ngModel)]="form.description" name="description" rows="3" required></textarea>
         </div>
 
         <div class="field image-preview" *ngIf="form.image_url">

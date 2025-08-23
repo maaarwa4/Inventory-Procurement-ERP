@@ -83,13 +83,32 @@ export class SupplierList implements OnInit {
 
   deactivateSupplier(supplier: Supplier): void {
     const action = supplier.isActive ? 'désactiver' : 'activer';
-    if (confirm(`${action} ce fournisseur ?`)) {
+    if (confirm(`Voulez-vous vraiment ${action} ce fournisseur ?`)) {
       if (supplier.isActive) {
-        this.supplierService.deactivate(supplier.id!).subscribe(() => this.loadSuppliers());
+        // 🔴 Désactiver
+        this.supplierService.deactivate(supplier.id!).subscribe({
+          next: () => this.loadSuppliers(),
+          error: (err) => console.error('Erreur désactivation fournisseur', err)
+        });
       } else {
-        this.supplierService.update(supplier.id!, { ...supplier, isActive: true })
-          .subscribe(() => this.loadSuppliers());
+        // 🟢 Activer
+        this.supplierService.activate(supplier.id!).subscribe({
+          next: () => this.loadSuppliers(),
+          error: (err) => console.error('Erreur activation fournisseur', err)
+        });
       }
     }
   }
+  
+
+
+  deleteSupplier(id: number): void {
+    if (confirm('Voulez-vous vraiment supprimer définitivement ce fournisseur ?')) {
+      this.supplierService. deleteSupplier(id).subscribe({
+        next: () => this.loadSuppliers(),
+        error: (err) => console.error('Erreur suppression fournisseur', err)
+      });
+    }
+  }
+  
 }

@@ -7,6 +7,8 @@ export interface Product {
   stock_quantity: number;
   image_url?: string;
   description?: string;
+  network_type?: string; // Enum NetworkType
+  screen_size?: string; // Enum ScreenSize
   storage?: string; // Enum StorageCapacity
   color?: string; // Enum Color
   model?: string;

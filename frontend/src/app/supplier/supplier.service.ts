@@ -27,6 +27,7 @@ export class SupplierService {
 
   constructor(private http: HttpClient) {}
 
+  // === SUPPLIERS ===
   getAll(): Observable<Supplier[]> {
     return this.http.get<Supplier[]>(this.apiUrl);
   }
@@ -43,8 +44,9 @@ export class SupplierService {
     return this.http.put<Supplier>(`${this.apiUrl}/${id}`, supplier);
   }
 
-  deactivate(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+
+  deleteSupplier(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/delete/${id}`);
   }
 
   // === PRODUCTS ===
@@ -61,11 +63,33 @@ export class SupplierService {
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     });
-
-    console.log('Service - URL:', `${this.productsUrl}`);
-    console.log('Service - DTO envoyé:', JSON.stringify(dto, null, 2));
-    console.log('Service - Headers:', headers);
-
     return this.http.post<Product>(`${this.productsUrl}`, dto, { headers });
   }
+
+  updateProduct(id: number, dto: ProductCreateDTO): Observable<Product> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
+    
+    console.log('🔵 Service UPDATE - URL:', `${this.productsUrl}/${id}`);
+    console.log('🔵 Service UPDATE - DTO envoyé:', JSON.stringify(dto));
+    console.log('🔵 Service UPDATE - Headers:', headers);
+    
+    return this.http.put<Product>(`${this.productsUrl}/${id}`, dto, { headers });
+  }
+
+  deleteProduct(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.productsUrl}/${id}`);
+  }
+
+  activate(id: number) {
+    return this.http.put<void>(`${this.apiUrl}/${id}/activate`, {});
+  }
+  
+  deactivate(id: number) {
+    return this.http.put<void>(`${this.apiUrl}/${id}/deactivate`, {});
+  }
+  
+  
 }
