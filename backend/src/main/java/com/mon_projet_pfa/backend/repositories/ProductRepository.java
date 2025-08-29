@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ProductRepository extends JpaRepository<Product, Integer>, JpaSpecificationExecutor<Product> {
+public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
         List<Product> findBySupplier_Id(Long supplierId);
 
         // Méthode de recherche personnalisée avec requête native corrigée

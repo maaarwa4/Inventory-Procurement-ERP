@@ -65,7 +65,7 @@ class ProductControllerTest {
     @Test
     void testGetProductById() throws Exception {
         Product p1 = expectedProducts.get(0);
-        Mockito.when(productService.getById(1)).thenReturn(p1);
+        Mockito.when(productService.getById(1L)).thenReturn(p1);
 
         mockMvc.perform(get("/api/products/1"))
                 .andExpect(status().isOk())
@@ -88,7 +88,7 @@ class ProductControllerTest {
     void testUpdateProduct() throws Exception {
         Product updated = expectedProducts.get(0);
         updated.setName("iPhone 15 Pro");
-        Mockito.when(productService.update(Mockito.eq(1), Mockito.any(Product.class))).thenReturn(updated);
+        Mockito.when(productService.update(Mockito.eq(1L), Mockito.any(Product.class))).thenReturn(updated);
 
         mockMvc.perform(put("/api/products/1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -100,18 +100,18 @@ class ProductControllerTest {
     @Test
     void testDeleteProduct() throws Exception {
         // Configure le mock pour ne rien faire lors de la suppression
-        Mockito.doNothing().when(productService).deleteProduct(1);
+        Mockito.doNothing().when(productService).deleteProduct(1L);
 
         mockMvc.perform(delete("/api/products/1"))
                 .andExpect(status().isNoContent());
 
-        Mockito.verify(productService, Mockito.times(1)).deleteProduct(1);
+        Mockito.verify(productService, Mockito.times(1)).deleteProduct(1L);
     }
 
     @Test
     void testGetProductById_NotFound() throws Exception {
         // Modifié pour simuler une exception spécifique
-        Mockito.when(productService.getById(999))
+        Mockito.when(productService.getById(999L))
                 .thenThrow(new RuntimeException("Product not found with id: 999"));
 
         mockMvc.perform(get("/api/products/999"))
@@ -121,7 +121,7 @@ class ProductControllerTest {
     @Test
     void testUpdateProduct_NotFound() throws Exception {
         Product updated = expectedProducts.get(0);
-        Mockito.when(productService.update(Mockito.eq(999), Mockito.any(Product.class)))
+        Mockito.when(productService.update(Mockito.eq(999L), Mockito.any(Product.class)))
                 .thenThrow(new RuntimeException("Product not found with id: 999"));
 
         mockMvc.perform(put("/api/products/999")
@@ -133,7 +133,7 @@ class ProductControllerTest {
     @Test
     void testDeleteProduct_NotFound() throws Exception {
         Mockito.doThrow(new RuntimeException("Product not found with id: 999"))
-                .when(productService).deleteProduct(999);
+                .when(productService).deleteProduct(999L);
 
         mockMvc.perform(delete("/api/products/999"))
                 .andExpect(status().isNotFound());

@@ -58,9 +58,9 @@ class ProductServiceTest {
     @Test
     void testGetProductById() {
         Product p1 = expectedProducts.get(0);
-        when(productRepository.findById(1)).thenReturn(Optional.of(p1));
+        when(productRepository.findById(1L)).thenReturn(Optional.of(p1));
 
-        Product product = productService.getById(1);
+        Product product = productService.getById(1L);
 
         assertNotNull(product);
         assertEquals("iPhone 14 Pro", product.getName());
@@ -80,10 +80,10 @@ class ProductServiceTest {
     @Test
     void testUpdateProduct() {
         Product p1 = expectedProducts.get(0);
-        when(productRepository.findById(1)).thenReturn(Optional.of(p1));
+        when(productRepository.findById(1L)).thenReturn(Optional.of(p1));
         when(productRepository.save(p1)).thenReturn(p1);
 
-        Product updated = productService.update(1, p1);
+        Product updated = productService.update(1L, p1);
 
         assertEquals(p1.getName(), updated.getName());
     }

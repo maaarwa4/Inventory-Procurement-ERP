@@ -12,7 +12,7 @@ export interface Supplier {
   lastName?: string;
   companyName?: string;
   phone?: string;
-  address: string;
+  address?: string;
   email?: string;
   country?: string;
   isActive?: boolean;

@@ -43,9 +43,9 @@ class PurchaseOrderControllerTest {
         PurchaseOrder order = new PurchaseOrder();
         order.setId(1L);
         order.setCreationDate(LocalDate.now());
-        order.setQuantity(90);
+        
 
-        when(purchaseOrderRepository.findById(1)).thenReturn(Optional.of(order));
+        when(purchaseOrderRepository.findById(1L)).thenReturn(Optional.of(order));
 
         mockMvc.perform(get("/api/purchase-orders/1"))
                 .andExpect(status().isOk())
@@ -56,7 +56,7 @@ class PurchaseOrderControllerTest {
     void testGetAllOrders() throws Exception {
         PurchaseOrder order = new PurchaseOrder();
         order.setId(1L);
-        order.setQuantity(90);
+       
 
         when(purchaseOrderRepository.findAll()).thenReturn(List.of(order));
 

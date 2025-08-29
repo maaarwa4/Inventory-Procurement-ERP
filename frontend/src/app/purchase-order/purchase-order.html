@@ -1,0 +1,201 @@
+<div class="purchase-order-container">
+    <div class="content-wrapper">
+  
+      <!-- Messages -->
+      <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+      <div *ngIf="errorMessage" class="alert alert-error">{{ errorMessage }}</div>
+  
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card" *ngFor="let stat of [
+          {icon: 'fa-box', label: 'Total orders', value: stats.total},
+          {icon: 'fa-clock', label: 'PENDING', value: stats.pending},
+          {icon: 'fa-check-circle', label: 'DELIVERED', value: stats.completed},
+          {icon: 'fa-dollar-sign', label: 'Total Amount', value: formatCurrency(stats.totalAmount)}
+        ]">
+          <div class="stat-content">
+            <div class="stat-icon"><i class="fas {{ stat.icon }}"></i></div>
+            <div class="stat-info">
+              <div class="stat-label">{{ stat.label }}</div>
+              <div class="stat-value">{{ stat.value }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <div class="toolbar-content">
+          <div class="filters-section">
+            <div class="search-input">
+              <i class="fas fa-search"></i>
+              <input type="text" placeholder="Rechercher..." [(ngModel)]="searchTerm" (input)="onSearchChange()" />
+            </div>
+  
+            <div class="filter-select">
+              <select [(ngModel)]="statusFilter" (change)="onStatusFilterChange()">
+                <option value="ALL">Tous les statuts</option>
+                <option *ngFor="let status of statusOptions" [value]="status.value">{{ status.label }}</option>
+              </select>
+            </div>
+  
+            <div class="filter-select">
+              <select [(ngModel)]="supplierFilter" (change)="onSupplierFilterChange()">
+                <option value="ALL">Tous les fournisseurs</option>
+                <option *ngFor="let s of suppliers" [value]="s.id">{{ s.firstName }} {{ s.lastName }}</option>
+              </select>
+            </div>
+          </div>
+  
+          <div class="actions-section">
+            <button (click)="refreshData()" class="btn btn-secondary" [disabled]="loading">
+              <i class="fas fa-refresh" [class.fa-spin]="loading"></i> Actualiser
+            </button>
+            <button (click)="openCreateDialog()" class="btn btn-primary">
+              <i class="fas fa-plus"></i> Nouvelle Commande
+            </button>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Tableau -->
+      <div class="orders-table">
+        <div class="table-container">
+          <table>
+            <thead>
+            <tr>
+              <th>N°</th><th>Date</th><th>Fournisseur</th>
+              <th>Produits</th><th>Qté</th><th>Montant</th>
+              <th>Statut</th><th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let order of paginatedOrders; trackBy: trackByOrderId">
+              <td class="order-id">#{{ order.id }}</td>
+              <td>{{ formatDate(order.creationDate) }}</td>
+              <td>{{ getSupplierName(order.supplier) }}</td>
+              <td>{{ getProductNames(order) }}</td>
+              <td>{{ getTotalQuantity(order) }}</td>
+              <td>{{ formatCurrency(order.totalAmount) }}</td>
+              <td>
+                <span class="status-badge {{ getStatusClass(order.status) }}">{{ getStatusLabel(order.status) }}</span>
+              </td>
+              <td>
+                <div class="actions">
+                  <button (click)="downloadPdf(order.id!)" class="btn-download" title="Télécharger"><i class="fas fa-download"></i></button>
+                  <button (click)="openEditDialog(order)" class="btn-edit" title="Modifier"><i class="fas fa-edit"></i></button>
+                  <button (click)="deleteOrder(order)" class="btn-delete" title="Supprimer"><i class="fas fa-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+  
+      <!-- ==================== MODALE CREATION ==================== -->
+      <div *ngIf="isCreateDialogOpen" class="dialog-overlay" (click)="onOverlayClick($event, 'create')">
+        <div class="dialog-content" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h2>Nouvelle Commande</h2>
+          </div>
+  
+          <form [formGroup]="createForm" (ngSubmit)="createOrder()">
+            <div class="form-group">
+              <label>Date :</label>
+              <input type="date" formControlName="creationDate">
+            </div>
+  
+            <div class="form-group">
+              <label>Fournisseur :</label>
+              <select formControlName="supplierId">
+                <option value="">-- Choisir --</option>
+                <option *ngFor="let s of suppliers" [value]="s.id">{{ s.firstName }} {{ s.lastName }}</option>
+              </select>
+            </div>
+  
+            <div class="form-group">
+              <label>Statut :</label>
+              <select formControlName="status">
+                <option *ngFor="let status of statusOptions" [value]="status.value">{{ status.label }}</option>
+              </select>
+            </div>
+  
+            <div class="form-group">
+              <label>Produits :</label>
+              <div *ngFor="let p of products">
+                <label>
+                  <input type="checkbox" [checked]="isProductSelected(p)" (change)="toggleProductSelection(p, $event)">
+                  {{ p.name }}
+                </label>
+                <div *ngIf="isProductSelected(p)">
+                  <div [formGroup]="getProductFormGroup(p)!">
+                    <input type="number" min="1" formControlName="quantity">
+                    <span>@ {{ formatCurrency(p.price) }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+  
+            <div class="dialog-actions">
+              <button type="submit" class="btn btn-primary">Créer</button>
+              <button type="button" (click)="closeCreateDialog()" class="btn btn-secondary">Annuler</button>
+            </div>
+          </form>
+        </div>
+      </div>
+  
+      <!-- ==================== MODALE EDITION ==================== -->
+      <div *ngIf="isEditDialogOpen" class="dialog-overlay" (click)="onOverlayClick($event, 'edit')">
+        <div class="dialog-content" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h2>Modifier Commande #{{ selectedOrder?.id }}</h2>
+          </div>
+  
+          <form [formGroup]="editForm" (ngSubmit)="updateOrder()">
+            <div class="form-group">
+              <label>Date :</label>
+              <input type="date" formControlName="creationDate">
+            </div>
+  
+            <div class="form-group">
+              <label>Fournisseur :</label>
+              <select formControlName="supplierId">
+                <option *ngFor="let s of suppliers" [value]="s.id">{{ s.firstName }} {{ s.lastName }}</option>
+              </select>
+            </div>
+  
+            <div class="form-group">
+              <label>Statut :</label>
+              <select formControlName="status">
+                <option *ngFor="let status of statusOptions" [value]="status.value">{{ status.label }}</option>
+              </select>
+            </div>
+  
+            <div class="form-group">
+              <label>Produits :</label>
+              <div *ngFor="let p of products">
+                <label>
+                  <input type="checkbox" [checked]="isEditProductSelected(p)" (change)="toggleEditProductSelection(p, $event)">
+                  {{ p.name }}
+                </label>
+                <div *ngIf="isEditProductSelected(p)">
+                  <div *ngIf="getEditProductFormGroup(p) as editProductFormGroup" [formGroup]="editProductFormGroup">
+                    <input type="number" min="1" formControlName="quantity">
+                    <span>@ {{ formatCurrency(p.price) }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+  
+            <div class="dialog-actions">
+              <button type="submit" class="btn btn-primary">Mettre à jour</button>
+              <button type="button" (click)="closeEditDialog()" class="btn btn-secondary">Annuler</button>
+            </div>
+          </form>
+        </div>
+      </div>
+  
+    </div>
+  </div>
+  

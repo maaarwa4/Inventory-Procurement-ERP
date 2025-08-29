@@ -8,104 +8,89 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.springframework.stereotype.Service;
 
+import com.mon_projet_pfa.backend.models.OrderItem;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+
 
 @Service
 public class PurchaseOrderPdfService {
+public byte[] generatePurchaseOrderPdf(String supplierName, List<OrderItem> items, String status) throws IOException {
+    try (PDDocument document = new PDDocument()) {
+        PDPage page = new PDPage(PDRectangle.A4);
+        document.addPage(page);
 
-    public byte[] generatePurchaseOrderPdf(String supplierName, String productName,
-            Integer quantity, Double totalAmount,
-            String status) throws IOException {
-        try (PDDocument document = new PDDocument()) {
-            PDPage page = new PDPage(PDRectangle.A4);
-            document.addPage(page);
+        try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
+            PDType1Font fontBold = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
+            PDType1Font fontRegular = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
 
-            try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
-                // Utilisation des nouvelles constantes de PDFBox 3.x
-                PDType1Font fontBold = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
-                PDType1Font fontRegular = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
+            float margin = 50;
+            float yPosition = page.getMediaBox().getHeight() - margin;
+            float fontSize = 12;
 
-                float margin = 50;
-                float yPosition = page.getMediaBox().getHeight() - margin;
-                float fontSize = 12;
-                float titleFontSize = 16;
+            // Titre
+            contentStream.beginText();
+            contentStream.setFont(fontBold, 18);
+            contentStream.newLineAtOffset(margin, yPosition);
+            contentStream.showText("BON DE COMMANDE - " + status);
+            contentStream.endText();
 
-                // Titre
-                contentStream.beginText();
-                contentStream.setFont(fontBold, titleFontSize);
-                contentStream.newLineAtOffset(margin, yPosition);
-                contentStream.showText("BON DE COMMANDE - " + status);
-                contentStream.endText();
+            yPosition -= 40;
 
-                yPosition -= 40;
+            // Fournisseur
+            addTextLine(contentStream, fontRegular, fontSize, margin, yPosition, "Fournisseur: " + supplierName);
+            yPosition -= 20;
 
-                // Informations de base
-                contentStream.beginText();
-                contentStream.setFont(fontRegular, fontSize);
-                contentStream.newLineAtOffset(margin, yPosition);
-                contentStream.showText("Fournisseur: " + supplierName);
-                contentStream.endText();
+            addTextLine(contentStream, fontRegular, fontSize, margin, yPosition,
+                    "Date: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
+            yPosition -= 40;
 
+            // En-têtes du tableau
+            addTextLine(contentStream, fontBold, fontSize, margin, yPosition, "Produit");
+            addTextLine(contentStream, fontBold, fontSize, margin + 200, yPosition, "Qté");
+            addTextLine(contentStream, fontBold, fontSize, margin + 280, yPosition, "Prix unitaire");
+            addTextLine(contentStream, fontBold, fontSize, margin + 400, yPosition, "Total");
+            yPosition -= 20;
+
+            contentStream.moveTo(margin, yPosition);
+            contentStream.lineTo(page.getMediaBox().getWidth() - margin, yPosition);
+            contentStream.stroke();
+            yPosition -= 20;
+
+            // Boucle sur tous les produits
+            double totalGeneral = 0;
+            for (OrderItem item : items) {
+                addTextLine(contentStream, fontRegular, fontSize, margin, yPosition, item.getProduct().getName());
+                addTextLine(contentStream, fontRegular, fontSize, margin + 200, yPosition, String.valueOf(item.getQuantity()));
+                addTextLine(contentStream, fontRegular, fontSize, margin + 280, yPosition, String.format("%.2f €", item.getUnitPrice().doubleValue()));
+                addTextLine(contentStream, fontRegular, fontSize, margin + 400, yPosition, String.format("%.2f €", item.getQuantity() * item.getUnitPrice().doubleValue()));
+
+                totalGeneral += item.getQuantity() * item.getUnitPrice().doubleValue();
                 yPosition -= 20;
 
-                contentStream.beginText();
-                contentStream.setFont(fontRegular, fontSize);
-                contentStream.newLineAtOffset(margin, yPosition);
-                contentStream.showText(
-                        "Date: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
-                contentStream.endText();
-
-                yPosition -= 40;
-
-                // En-têtes du tableau
-                contentStream.beginText();
-                contentStream.setFont(fontBold, fontSize);
-                contentStream.newLineAtOffset(margin, yPosition);
-                contentStream.showText("Produit");
-                contentStream.newLineAtOffset(150, 0);
-                contentStream.showText("Quantité");
-                contentStream.newLineAtOffset(100, 0);
-                contentStream.showText("Prix total");
-                contentStream.endText();
-
-                yPosition -= 30;
-
-                // Ligne de séparation
-                contentStream.moveTo(margin, yPosition);
-                contentStream.lineTo(page.getMediaBox().getWidth() - margin, yPosition);
-                contentStream.stroke();
-
-                yPosition -= 20;
-
-                // Détails du produit
-                contentStream.beginText();
-                contentStream.setFont(fontRegular, fontSize);
-                contentStream.newLineAtOffset(margin, yPosition);
-                contentStream.showText(productName);
-                contentStream.newLineAtOffset(150, 0);
-                contentStream.showText(quantity.toString());
-                contentStream.newLineAtOffset(100, 0);
-                contentStream.showText(String.format("%.2f €", totalAmount));
-                contentStream.endText();
-
-                yPosition -= 40;
-
-                // Total
-                contentStream.beginText();
-                contentStream.setFont(fontBold, fontSize);
-                contentStream.newLineAtOffset(page.getMediaBox().getWidth() - margin - 100, yPosition);
-                contentStream.showText("TOTAL: " + String.format("%.2f €", totalAmount));
-                contentStream.endText();
+                // saut de page si besoin
+                if (yPosition < margin + 50) {
+                    contentStream.close();
+                    page = new PDPage(PDRectangle.A4);
+                    document.addPage(page);
+                    yPosition = page.getMediaBox().getHeight() - margin;
+                }
             }
 
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            document.save(baos);
-            return baos.toByteArray();
+            yPosition -= 40;
+            addTextLine(contentStream, fontBold, fontSize + 2, page.getMediaBox().getWidth() - margin - 150, yPosition,
+                    "TOTAL: " + String.format("%.2f €", totalGeneral));
         }
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        document.save(baos);
+        return baos.toByteArray();
     }
+}
 
     // Méthode alternative avec des paramètres personnalisés
     public byte[] generateCustomPurchaseOrderPdf(String orderNumber, String customerName,

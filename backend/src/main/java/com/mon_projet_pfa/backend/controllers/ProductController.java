@@ -47,7 +47,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getById(@PathVariable int id) {
+    public ResponseEntity<Product> getById(@PathVariable Long id) {
         try {
             Product product = productService.getById(id);
             return ResponseEntity.ok(product);
@@ -86,7 +86,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Product> update(@PathVariable int id, @RequestBody ProductCreateDTO dto) {
+    public ResponseEntity<Product> update(@PathVariable Long id, @RequestBody ProductCreateDTO dto) {
         try {
             // First, get the existing product
             Product existingProduct = productService.getById(id);
@@ -134,7 +134,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable int id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         try {
             productService.deleteProduct(id);
             return ResponseEntity.noContent().build();
