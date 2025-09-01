@@ -3,8 +3,12 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'products',
+    redirectTo: 'login',
     pathMatch: 'full'
+  },
+  {
+    path: 'login',
+    loadComponent: () => import('./login/login').then(m => m.LoginComponent)
   },
   {
     path: 'products',
@@ -20,5 +24,15 @@ export const routes: Routes = [
     path: 'purchases',
     loadChildren: () =>
       import('./purchase-order/purchase-order.routes').then(m => m.PURCHASE_ORDER_ROUTES)
+  },
+  {
+    // ✅ Route profile AVANT la wildcard
+    path: 'profile',
+    loadComponent: () => import('./profile/profile').then(m => m.ProfileComponent)
+  },
+  {
+    // ✅ Route wildcard EN DERNIER
+    path: '**',
+    redirectTo: 'login'
   }
 ];

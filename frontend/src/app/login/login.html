@@ -1,0 +1,49 @@
+<!-- Fichier: login/login.component.html -->
+<div class="login-container">
+    <div class="login-card">
+      <h2>Connexion Admin</h2>
+      
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <!-- Email Field -->
+        <div class="form-group">
+          <input 
+            type="email" 
+            placeholder="Email" 
+            formControlName="email"
+            [class.error]="email?.invalid && email?.touched">
+          <div *ngIf="email?.invalid && email?.touched" class="error-text">
+            <span *ngIf="email?.errors?.['required']">L'email est requis</span>
+            <span *ngIf="email?.errors?.['email']">Format d'email invalide</span>
+          </div>
+        </div>
+  
+        <!-- Password Field -->
+        <div class="form-group">
+          <input 
+            type="password" 
+            placeholder="Mot de passe" 
+            formControlName="password"
+            [class.error]="password?.invalid && password?.touched">
+          <div *ngIf="password?.invalid && password?.touched" class="error-text">
+            <span *ngIf="password?.errors?.['required']">Le mot de passe est requis</span>
+            <span *ngIf="password?.errors?.['minlength']">Minimum 3 caractères</span>
+          </div>
+        </div>
+  
+        <!-- Submit Button -->
+        <button 
+          type="submit" 
+          [disabled]="loginForm.invalid || isLoading"
+          class="submit-btn">
+          <span *ngIf="!isLoading">Se connecter</span>
+          <span *ngIf="isLoading">Connexion...</span>
+        </button>
+      </form>
+  
+      <!-- Error Message -->
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+
+    </div>
+  </div>

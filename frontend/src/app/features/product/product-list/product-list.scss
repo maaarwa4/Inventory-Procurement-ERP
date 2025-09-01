@@ -18,11 +18,35 @@
   flex-wrap: wrap;
   gap: 16px;
   align-items: flex-end;
+
+ 
 }
+
+
+/* Centrer le texte dans les mat-select */
+::ng-deep .mat-mdc-select-value {
+  justify-content: center !important;  /* centre horizontalement */
+  text-align: center !important;       /* centre le texte */
+}
+
+/* Centrer aussi les options dans la liste déroulante */
+::ng-deep .mat-mdc-option .mdc-list-item__primary-text {
+  text-align: center !important;
+  width: 100%;
+}
+
+/* Donner un fond clair aux dropdowns pour plus de visibilité */
+::ng-deep .mat-mdc-select-panel {
+  background-color: #ffffff !important;  /* fond blanc */
+  border-radius: 8px;                   /* arrondi élégant */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* ombre douce */
+}
+
 
 .search-container {
   flex: 1;
   min-width: 300px;
+
 }
 
 .search-field {

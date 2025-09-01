@@ -25,7 +25,8 @@ import com.mon_projet_pfa.backend.repositories.SupplierRepository;
 
 @RestController
 @RequestMapping("/api/products")
-@CrossOrigin(origins = "*")
+
+@CrossOrigin(origins = "http://localhost:4200")
 public class ProductController {
 
     @Autowired

@@ -14,7 +14,7 @@ import org.springframework.http.MediaType;
 
 @RestController
 @RequestMapping("/api/purchase-orders")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:4200")
 public class PurchaseOrderController {
 
         @Autowired

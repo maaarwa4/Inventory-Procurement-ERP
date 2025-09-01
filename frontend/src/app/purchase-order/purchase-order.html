@@ -10,7 +10,7 @@
         <div class="stat-card" *ngFor="let stat of [
           {icon: 'fa-box', label: 'Total orders', value: stats.total},
           {icon: 'fa-clock', label: 'PENDING', value: stats.pending},
-          {icon: 'fa-check-circle', label: 'DELIVERED', value: stats.completed},
+          {icon: 'fa-check-circle', label: 'DELIVERED', value: stats.delivered},
           {icon: 'fa-dollar-sign', label: 'Total Amount', value: formatCurrency(stats.totalAmount)}
         ]">
           <div class="stat-content">

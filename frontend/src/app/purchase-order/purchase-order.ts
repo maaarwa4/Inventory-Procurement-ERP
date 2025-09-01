@@ -58,7 +58,7 @@ export class PurchaseOrderComponent implements OnInit {
   errorMessage = '';
   loading = false;
 
-  stats = { total: 0, pending: 0, completed: 0, totalAmount: 0 };
+  stats = { total: 0, pending: 0, delivered: 0, totalAmount: 0 };
 
   constructor(
     private fb: FormBuilder,
@@ -181,7 +181,7 @@ export class PurchaseOrderComponent implements OnInit {
   computeStats(): void {
     this.stats.total = this.orders.length;
     this.stats.pending = this.orders.filter(o => o.status === 'PENDING').length;
-    this.stats.completed = this.orders.filter(o => o.status === 'DELIVERED').length;
+    this.stats.delivered = this.orders.filter(o => o.status === 'DELIVERED').length;
     this.stats.totalAmount = this.orders.reduce((sum, o) => sum + this.calculateOrderTotal(o), 0);
   }
 
@@ -214,7 +214,7 @@ export class PurchaseOrderComponent implements OnInit {
 
   getStatusLabel(status: string): string {
     switch (status) {
-      case 'PENDING': return 'En Attente';
+      case 'PENDING': return 'PENDING';
       case 'COMPLETED': return 'Terminée';
       case 'CANCELLED': return 'Annulée';
       default: return status;
