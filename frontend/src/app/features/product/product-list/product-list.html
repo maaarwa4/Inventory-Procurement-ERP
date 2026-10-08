@@ -1,0 +1,60 @@
+<!-- Nom du fichier : src/app/features/product/product-list/product-list.html -->
+<div class="product-page-container">
+  <h1>Nos Produits</h1>
+
+  <!-- Section des filtres avec le style Material -->
+  <div class="filters-container">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Rechercher un produit</mat-label>
+      <input matInput [(ngModel)]="search" (keyup.enter)="searchProducts()" placeholder="Ex: iPhone 15">
+      <button mat-icon-button matSuffix (click)="searchProducts()" aria-label="Lancer la recherche">
+        <mat-icon>search</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
+
+  <!-- Grille des produits, plus de tableau ! -->
+  <div class="product-grid" *ngIf="products.length > 0; else noProducts">
+    <!-- On boucle sur les produits pour créer une carte pour chaque -->
+    <mat-card *ngFor="let product of products" class="product-card">
+      <!-- Image du produit (il faudra ajouter imageUrl à votre modèle Product) -->
+      <img mat-card-image [src]="product.image_url" [alt]="product.name" class="product-image">
+
+      <mat-card-header>
+        <mat-card-title>{{ product.name }}</mat-card-title>
+        <mat-card-subtitle>{{ product.brand }} - {{ product.category }}</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <p class="product-description">{{ product.description | slice:0:100 }}...</p>
+        <p class="product-price">{{ product.price | currency:'EUR' }}</p>
+      </mat-card-content>
+
+      <mat-card-actions align="end">
+        <button mat-stroked-button [routerLink]="['/products', product.id]">Détails</button>
+        <button mat-flat-button color="primary" [routerLink]="['/products/edit', product.id]">
+          <!-- Ceci est un exemple, le client ne devrait pas pouvoir modifier -->
+          Modifier
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <!-- Message si aucun produit n'est trouvé -->
+  <ng-template #noProducts>
+    <div class="no-products-found">
+      <mat-icon>search_off</mat-icon>
+      <p>Aucun produit ne correspond à votre recherche.</p>
+    </div>
+  </ng-template>
+
+  <!-- Paginateur Angular Material, qui remplace les vieux boutons -->
+  <mat-paginator
+      class="paginator"
+      [length]="totalElements"
+      [pageSize]="size"
+      [pageSizeOptions]="[12, 24, 48]"
+      (page)="handlePageEvent($event)"
+      aria-label="Sélectionner la page">
+  </mat-paginator>
+</div>

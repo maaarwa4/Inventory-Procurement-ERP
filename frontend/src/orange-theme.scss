@@ -1,0 +1,24 @@
+// Nom du fichier : src/orange-theme.scss
+
+// On importe les outils de theming d'Angular Material.
+// Cette fois, on utilise un chemin relatif qui est infaillible.
+@import '../node_modules/@angular/material/theming';
+
+// On inclut les styles de base une seule fois.
+@include mat-core();
+
+// -- Définition de votre palette Orange Business --
+$orange-business-primary: mat-palette($mat-orange, 800, 700, 900);
+$orange-business-accent:  mat-palette($mat-blue-gray, A200, A100, A400);
+$orange-business-warn:    mat-palette($mat-red);
+
+// -- Création de l'objet Thème --
+$orange-business-theme: mat-light-theme(
+  $orange-business-primary,
+  $orange-business-accent,
+  $orange-business-warn
+);
+
+// -- Application du thème --
+// Cette ligne génère toutes les classes CSS pour votre thème.
+@include angular-material-theme($orange-business-theme);

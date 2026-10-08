@@ -1,0 +1,36 @@
+[
+  {
+    "id": 1,
+    "name": "iPhone 14 Pro",
+    "description": "Apple smartphone haut de gamme avec caméra 48MP.",
+    "brand": "APPLE",
+    "category": "SMARTPHONE",
+    "price": 1399.99,
+    "stock_quantity": 25,
+    "image_url": "https://example.com/iphone14pro.jpg",
+    "model": "A2890",
+    "color": "BLACK",
+    "storage": "GB256",
+    "screen_size": "6.1",
+    "network_type": "5G",
+    "created_at": "2025-07-28 10:00:00",
+    "updated_at": "2025-07-28 10:00:00"
+  },
+  {
+    "id": 2,
+    "name": "iPhone 15 Pro max ",
+    "description": "Apple smartphone haut de gamme avec caméra 48MP.",
+    "brand": "APPLE",
+    "category": "SMARTPHONE",
+    "price": 1399.99,
+    "stock_quantity": 25,
+    "image_url": "https://example.com/iphone14pro.jpg",
+    "model": "A2890",
+    "color": "BLACK",
+    "storage": "GB256",
+    "screen_size": "6.1",
+    "network_type": "5G",
+    "created_at": "2025-07-28 10:00:00",
+    "updated_at": "2025-07-28 10:00:00"
+  }
+]
