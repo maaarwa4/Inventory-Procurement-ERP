@@ -1,5 +1,5 @@
 <a href="https://github.com/maaarwa4">
-  <img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:0EA5E9,50:4F46E5,100:9333EA&height=190&section=header&text=Inventory%20%26%20Procurement%20ERP&fontSize=42&fontColor=ffffff&fontAlignY=38&desc=Stock%2C%20suppliers%20and%20purchase%20orders%20in%20one%20place&descSize=16&descAlignY=60&animation=fadeIn" alt="Inventory & Procurement ERP" />
+  <img width="100%" src="assets/banner.svg" alt="Inventory & Procurement ERP" />
 </a>
 
 <div align="center">
@@ -133,5 +133,5 @@ Built by **Marwa Bounoua**
 </div>
 
 <a href="https://github.com/maaarwa4">
-  <img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:0EA5E9,50:4F46E5,100:9333EA&height=100&section=footer" alt="" />
+  <img width="100%" src="assets/footer.svg" alt="" />
 </a>
